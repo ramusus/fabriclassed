@@ -24,4 +24,4 @@ def add_class_methods_as_module_level_functions_for_fabric(instance, module_name
             # add the function to the current module
             setattr(module_obj, method_name, func)
 
-    return [name for name in dir(instance) if '__' not in name and callable(getattr(instance, name))]
+    return [name for name in dir(instance) if name[0] != '_' and callable(getattr(instance, name))]

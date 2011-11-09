@@ -1,14 +1,31 @@
 from fabric import api as fab
+from os.path import exists
 
-class FabricBase(object):
-    name = ''
-    local_file = ''
-    remote_file = ''
+class BaseFabric(object):
 
-    def base_task1(self):
-        '''base task 1'''
-        fab.run('svn export /path/to/{self.name}'.format(self=self))
+    hosts = []
+    remote_project_path = ''
+    local_project_path = ''
 
-    def base_task2(self):
-        '''base task 2'''
-        fab.put(self.local_file, self.remote_file)
+    search_dirs = []
+    search_exclude_patterns = [".pyc", ".svn", ".tmp_"]
+
+    def __init__(self):
+        fab.hosts = self.hosts
+
+    def _remote(self):
+        '''
+        Returns true if we run fabfile remotely.
+        Script check existing local_project_path directory
+        '''
+        return not exists(self.local_project_path)
+
+    def search(self, string=''):
+        '''
+        Search string amoung source code
+        '''
+        fab.local('grep -r %(string)s %(dirs)s %(exclude)s' % {
+            'string': string,
+            'dirs': ' '.join(self.search_dirs),
+            'exclude': '| ' + ' | '.join(['grep -v "%s"' % pattern for pattern in self.search_exclude_patterns]) if len(self.search_exclude_patterns) else '',
+        }, capture=False)

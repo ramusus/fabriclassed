@@ -1,6 +1,6 @@
-from fabriclassed import FabricBase, initialize, fab
+from fabriclassed import BaseFabric, initialize, fab
 
-class Fabric(FabricBase):
+class Fabric(BaseFabric):
     name = 'website'
     local_file = '/local/path/to/my_website'
     remote_file = '/remote/path/to/my_website'

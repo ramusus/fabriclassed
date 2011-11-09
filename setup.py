@@ -4,7 +4,7 @@ setup(
     name='fabriclassed',
     version=__import__('fabriclassed').__version__,
     description='Class-based Fabric scripts via a Python metaprogramming hack',
-    long_description=open('README').read(),
+    long_description=open('README.md').read(),
     author='ramusus',
     author_email='ramusus@gmail.com',
     url='https://github.com/ramusus/fabriclassed',
@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     zip_safe=False, # because we're including media that Django needs
     install_requires=[
-        'fabric',
+        'fabric==1.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
