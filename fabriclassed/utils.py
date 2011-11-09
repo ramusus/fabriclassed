@@ -6,7 +6,8 @@ def add_class_methods_as_module_level_functions_for_fabric(instance, module_name
     Utility to take the methods of the instance of a class, instance,
     and add them as functions to a module, module_name, so that Fabric
     can find and call them. Call this at the bottom of a module after
-    the class definition.
+    the class definition. Returns a list of method for __all__ variable,
+    otherwise command 'fab -l' will show extra commands.
     '''
     # get the module as an object
     module_obj = sys.modules[module_name]
@@ -22,3 +23,5 @@ def add_class_methods_as_module_level_functions_for_fabric(instance, module_name
 
             # add the function to the current module
             setattr(module_obj, method_name, func)
+
+    return [name for name in dir(instance) if '__' not in name and callable(getattr(instance, name))]
