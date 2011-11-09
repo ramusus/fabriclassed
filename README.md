@@ -20,3 +20,13 @@ class Fabric(FabricBase):
    
 __all__ = initialize(Fabric(), __name__)
 ```
+
+Running fab -l gives:
+
+```
+$ fab -l
+Available commands:
+
+    task  my website task
+```
+
