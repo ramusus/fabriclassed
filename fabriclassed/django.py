@@ -39,7 +39,7 @@ class DjangoFabric(object):
 
     def sh(self):
         '''
-        Run Django's shell. If shell_plus=True
+        Run Django's standart shell or shell from django_extentions application if `shell_plus=True`
         '''
         self._manage('shell_plus' if self.shell_plus else 'shell')
 

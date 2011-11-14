@@ -22,7 +22,7 @@ class BaseFabric(object):
 
     def search(self, string=''):
         '''
-        Search string amoung source code
+        Search string amoung source code inside directories from `search_dirs` property
         '''
         fab.local('grep -r %(string)s %(dirs)s %(exclude)s' % {
             'string': string,

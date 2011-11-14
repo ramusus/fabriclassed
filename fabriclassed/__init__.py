@@ -4,5 +4,6 @@ from base import BaseFabric
 from django import DjangoFabric
 from virtualenv import VirtualenvFabric
 
-__version__ = 0.2
+VERSION = (0, 3, 0)
+__version__ = '.'.join(map(str, VERSION))
 __all__ = ['FabricBase', 'DjangoFabric', 'VirtualenvFabric', 'initialize', 'fab']

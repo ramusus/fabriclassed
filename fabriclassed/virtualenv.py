@@ -33,6 +33,9 @@ class VirtualenvFabric(object):
 
     @contextmanager
     def virtualenv(self):
+        '''
+        Context manager for running command in virtualenv environment
+        '''
         with prefix('source %s/bin/activate' % join(self.local_project_path, self.virtualenv_dir)):
             yield
 
@@ -68,7 +71,7 @@ class VirtualenvFabric(object):
 
     def diff_dump(self):
         '''
-        Walk over map with patched applications and make diff files in 'diffs' directory
+        Walk over map of patched applications and make diff files in 'diffs' directory
         '''
         vcs_commands = {
             'git': 'git diff --no-prefix',

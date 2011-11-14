@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     zip_safe=False, # because we're including media that Django needs
     install_requires=[
-        'fabric==1.0',
+        'fabric>=1.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
