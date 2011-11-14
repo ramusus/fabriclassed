@@ -7,7 +7,8 @@ We had several Fabric scripts which violated DRY. Class-based Fabric script can 
 #### Example usage:
 
 ```python
-from fabriclassed import BaseFabric, initialize, fab
+from fabriclassed import BaseFabric, initialize
+from fabric import api as fab
 
 class Fabric(BaseFabric):
     remote_project_path = '/local/path/to/my_project'

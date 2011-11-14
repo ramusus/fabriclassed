@@ -1,4 +1,5 @@
-from fabriclassed import BaseFabric, initialize, fab
+from fabriclassed import BaseFabric, initialize
+from fabric import api as fab
 
 class Fabric(BaseFabric):
     name = 'website'
