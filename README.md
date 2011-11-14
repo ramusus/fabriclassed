@@ -44,7 +44,7 @@ Done.
 
 DjangoFabric and VirtualenvFabric classes contains various of tools to work with Django in Virtualenv environment. You can use both of these toos together or separately, as you like.
 
-Example fabric class with properies:
+Example of Fabric class with a bunch of properies:
 
 ```python
 from fabriclassed import initialize, BaseFabric, DjangoFabric, VirtualenvFabric
