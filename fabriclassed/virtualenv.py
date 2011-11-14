@@ -1,7 +1,7 @@
 from fabric.api import lcd, local
 from fabric.context_managers import prefix, settings
 from contextlib import contextmanager
-from os.path import join, isdir
+from os.path import join, isdir, relpath
 from os import listdir
 
 class VirtualenvFabric(object):
@@ -17,8 +17,10 @@ class VirtualenvFabric(object):
         # ('django-mptt-comments', 'git'),
         # applications from pypi in env/lib/python2.6/site-packages/ !!!! exactly app name, not 'django-pagination'
         # ('pagination', 'lib'),
+        # TODO: refactor for standard naming, excluding way of installing
     ]
     diff_dir = 'diffs'
+    applications_dir = 'apps'
 
     def _site_packages_path(self):
         return join(self.local_project_path, self.virtualenv_dir, 'lib', 'python2.6', 'site-packages')
@@ -41,6 +43,7 @@ class VirtualenvFabric(object):
         vcs_commands = {
             'git': 'git checkout .',
             'svn': 'svn revert -R .',
+            'hg': 'hg revert .',
         }
         for patch in listdir(join(self.local_project_path, self.diff_dir)):
             app_name, vcs = patch.split('.')[:-1]
@@ -60,7 +63,8 @@ class VirtualenvFabric(object):
                     local(vcs_commands[vcs], capture=False)
 
             with lcd(app_dir):
-                local('patch -p0 < %s' % join(self.local_project_path, self.diff_dir, patch), capture=False)
+                patch_command = 'patch -p1' if vcs == 'hg' else 'patch -p0'
+                local('%s < %s' % (patch_command, join(self.local_project_path, self.diff_dir, patch)), capture=False)
 
     def diff_dump(self):
         '''
@@ -69,6 +73,7 @@ class VirtualenvFabric(object):
         vcs_commands = {
             'git': 'git diff --no-prefix',
             'svn': 'svn diff',
+            'hg': 'hg diff' #TODO: remove prefixes a/ and b/ in diff files like in git
         }
         for app_name, vcs in self.patched_applications:
             patch_path = join(self.local_project_path, self.diff_dir, '%s.%s.diff' % (app_name, vcs))
@@ -81,3 +86,18 @@ class VirtualenvFabric(object):
                 app_dir = self._source_package_path(app_name)
                 with lcd(app_dir):
                     local('%s > %s' % (vcs_commands[vcs], patch_path), capture=False)
+
+    def symlink(self, app_name):
+        '''
+        Create symlink from 'apps' dir to the site-packages or source application dir
+        '''
+        source_dir = None
+        if isdir(self._source_package_path(app_name)):
+            source_dir = self._source_package_path(app_name)
+        elif isdir(self._site_package_path(app_name)):
+            source_dir = self._site_package_path(app_name)
+
+        if source_dir:
+            # convert absolute path to relative from application dir
+            source_dir = relpath(source_dir, join(self.local_project_path, self.applications_dir))
+            local('ln -s %s %s' % (source_dir, join(self.applications_dir, app_name)))
