@@ -29,3 +29,9 @@ class BaseFabric(object):
             'dirs': ' '.join(self.search_dirs),
             'exclude': '| ' + ' | '.join(['grep -v "%s"' % pattern for pattern in self.search_exclude_patterns]) if len(self.search_exclude_patterns) else '',
         }, capture=False)
+
+    def del_pyc(self):
+        '''
+        Remove all .pyc files inside in fabfile and child directories
+        '''
+        fab.local('find -name \*.pyc -delete')
