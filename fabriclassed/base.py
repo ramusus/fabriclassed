@@ -1,5 +1,9 @@
 from fabric import api as fab
 from os.path import exists
+from contrib.django import DjangoFabric
+from contrib.virtualenv import VirtualenvFabric
+
+__all__ = ['BaseFabric', 'DjangoFabric', 'VirtualenvFabric']
 
 class BaseFabric(object):
 

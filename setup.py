@@ -8,7 +8,7 @@ setup(
     author='ramusus',
     author_email='ramusus@gmail.com',
     url='https://github.com/ramusus/fabriclassed',
-    download_url='https://github.com/ramusus/fabriclassed/downloads',
+    download_url='http://pypi.python.org/pypi/fabriclassed',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,

@@ -7,7 +7,8 @@ We had several Fabric scripts which violated DRY. Class-based Fabric script can 
 #### Example usage:
 
 ```python
-from fabriclassed import BaseFabric, initialize
+from fabriclassed import initialize
+from fabriclassed.base import BaseFabric, DjangoFabric, VirtualenvFabric
 from fabric import api as fab
 
 class Fabric(BaseFabric):
@@ -15,7 +16,7 @@ class Fabric(BaseFabric):
     local_project_path = '/remote/path/to/my_project'
 
     def task(self):
-        '''my website task'''
+        '''My website task'''
         fab.local('echo "Hello world"')
 
 __all__ = initialize(Fabric(), __name__)
@@ -27,8 +28,9 @@ Running fab -l gives:
 $ fab -l
 Available commands:
 
-    search Search string amoung source code inside directories fro...
-    task  my website task
+    del_pyc          Remove all .pyc files inside in fabfile and child direc...
+    search           Search string amoung source code inside directories fro...
+    task             My website task
 ```
 
 Running fab task gives:
@@ -48,7 +50,8 @@ DjangoFabric and VirtualenvFabric classes contains various of tools to work with
 Example of Fabric class with a bunch of properies:
 
 ```python
-from fabriclassed import initialize, BaseFabric, DjangoFabric, VirtualenvFabric
+from fabriclassed import initialize
+from fabriclassed.base import BaseFabric, DjangoFabric, VirtualenvFabric
 from fabric.api import lcd, local
 
 class Fabric(BaseFabric, DjangoFabric, VirtualenvFabric):
@@ -82,6 +85,7 @@ Running fab -l gives:
 ```
 Available commands:
 
+    del_pyc          Remove all .pyc files inside in fabfile and child direc...
     dev              Run Django's dev server
     diff_dump        Walk over map of patched applications and make diff fil...
     patch            Walk over 'diffs' directory and patch every application
@@ -90,4 +94,10 @@ Available commands:
     symlink          Create symlink from 'apps' dir to the site-packages or ...
     test             Run Django's tests. Argument can be application name, n...
     virtualenv       Context manager for running command in virtualenv envir...
+```
+
+#### Installation:
+
+```
+pip install fabriclassed
 ```
