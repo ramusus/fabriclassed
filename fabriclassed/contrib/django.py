@@ -1,4 +1,4 @@
-from fabric.api import local
+from fabric.api import local, run
 import re
 
 class DjangoFabric(object):
@@ -11,9 +11,9 @@ class DjangoFabric(object):
     shell_plus = False
     devserver_port = 8000
 
-    def _manage(self, command):
+    def local_manage(self, command):
         '''
-        Run manage.py command
+        Run manage.py on development
         '''
         if getattr(self, 'use_virtualenv', False):
             # use virtualenv context manager
@@ -28,15 +28,29 @@ class DjangoFabric(object):
                 'command': command,
             }, capture=False)
 
-#    def local_manage(self, command):
-#        return self._manage(command)
+    def run_manage(self, command):
+        '''
+        Run manage.py on production
+        '''
+        if getattr(self, 'use_virtualenv', False):
+            # use virtualenv context manager
+            with self.virtualenv(remote=True):
+                run('%(manage)s %(command)s' % {
+                    'manage': self.managefile_path,
+                    'command': command,
+                })
+        else:
+            run('%(manage)s %(command)s' % {
+                'manage': self.managefile_path,
+                'command': command,
+            })
 
     def fab_dev(self):
         '''
         Run Django's dev server
         '''
-        self._manage('runserver %(host)s:%(port)d' % {
-            'host': self.hosts[0] if self._remote() else '127.0.0.1',
+        self.local_manage('runserver %(host)s:%(port)d' % {
+            'host': self.hosts[0] if self.is_remote() else '127.0.0.1',
             'port': self.devserver_port,
         })
 
@@ -44,7 +58,7 @@ class DjangoFabric(object):
         '''
         Run Django's standart shell or shell from django_extentions application if `shell_plus=True`
         '''
-        self._manage('shell_plus' if self.shell_plus else 'shell')
+        self.local_manage('shell_plus' if self.shell_plus else 'shell')
 
     def fab_test(self, test_name=''):
         '''
@@ -59,7 +73,7 @@ class DjangoFabric(object):
             if re.search(r'^[^\.]+Test', test_name):
                 test_name = '.'.join([self.test_default_app, test_name])
 
-        self._manage('test %(name)s %(settings)s' % {
+        self.local_manage('test %(name)s %(settings)s' % {
             'name': test_name,
             'settings': ('--settings=%s' % self.test_settings) if self.test_settings else '',
         })

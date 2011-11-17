@@ -1,5 +1,5 @@
 from fabric import api as fab
-from os.path import exists
+from os.path import exists, join
 from contrib.django import DjangoFabric
 from contrib.virtualenv import VirtualenvFabric
 
@@ -17,12 +17,25 @@ class BaseFabric(object):
     def __init__(self):
         fab.env.hosts = self.hosts
 
-    def _remote(self):
+    def is_remote(self):
         '''
         Returns true if we run fabfile remotely.
         Script check existing local_project_path directory
         '''
         return not exists(self.local_project_path)
+
+    @property
+    def project_path(self):
+        '''
+        Returns project path (dep or dev) depends on current directory sctructure
+        '''
+        return self.remote_project_path if self.is_remote() else self.local_project_path
+
+    def project_path_join(self, *args):
+        '''
+        Regular os.path.join() with prepended project_path
+        '''
+        return join(self.project_path, *args)
 
     def fab_search(self, string=''):
         '''

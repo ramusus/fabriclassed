@@ -23,33 +23,32 @@ class VirtualenvFabric(object):
     applications_dir = 'apps'
 
     def _site_packages_path(self):
-        return join(self.local_project_path, self.virtualenv_dir, 'lib', 'python2.6', 'site-packages')
+        return self.project_path_join(self.virtualenv_dir, 'lib', 'python2.6', 'site-packages')
 
     def _site_package_path(self, app_name):
         return join(self._site_packages_path(), app_name)
 
     def _source_package_path(self, app_name):
-        return join(self.local_project_path, self.virtualenv_dir, 'src', app_name)
+        return self.project_path_join(self.virtualenv_dir, 'src', app_name)
 
     @contextmanager
-    def virtualenv(self):
+    def virtualenv(self, remote=False):
         '''
         Context manager for running command in virtualenv environment
         '''
-        with prefix('source %s/bin/activate' % join(self.local_project_path, self.virtualenv_dir)):
+        with prefix('source %s/bin/activate' % join(self.remote_project_path if remote else self.local_project_path, self.virtualenv_dir)):
             yield
 
     def fab_patch(self):
         '''
         Walk over 'diffs' directory and patch every application
-        TODO: doesn't work on production
         '''
         vcs_commands = {
             'git': 'git checkout .',
             'svn': 'svn revert -R .',
             'hg': 'hg revert .',
         }
-        for patch in listdir(join(self.local_project_path, self.diff_dir)):
+        for patch in listdir(self.project_path_join(self.diff_dir)):
             app_name, vcs = patch.split('.')[:-1]
             if vcs == 'lib':
                 app_dir = self._site_packages_path()
@@ -68,7 +67,7 @@ class VirtualenvFabric(object):
 
             with lcd(app_dir):
                 patch_command = 'patch -p1' if vcs == 'hg' else 'patch -p0'
-                local('%s < %s' % (patch_command, join(self.local_project_path, self.diff_dir, patch)), capture=False)
+                local('%s < %s' % (patch_command, self.project_path_join(self.diff_dir, patch)), capture=False)
 
     def fab_diff_dump(self):
         '''
@@ -80,7 +79,7 @@ class VirtualenvFabric(object):
             'hg': 'hg diff' #TODO: remove prefixes a/ and b/ in diff files like in git
         }
         for app_name, vcs in self.patched_applications:
-            patch_path = join(self.local_project_path, self.diff_dir, '%s.%s.diff' % (app_name, vcs))
+            patch_path = self.project_path_join(self.diff_dir, '%s.%s.diff' % (app_name, vcs))
             if vcs == 'lib':
                 app_dir = self._site_packages_path()
                 with lcd(app_dir):
@@ -103,5 +102,5 @@ class VirtualenvFabric(object):
 
         if source_dir:
             # convert absolute path to relative from application dir
-            source_dir = relpath(source_dir, join(self.local_project_path, self.applications_dir))
+            source_dir = relpath(source_dir, self.project_path_join(self.applications_dir))
             local('ln -s %s %s' % (source_dir, join(self.applications_dir, app_name)))
