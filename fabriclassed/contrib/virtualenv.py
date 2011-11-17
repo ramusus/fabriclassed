@@ -1,4 +1,4 @@
-from fabric.api import lcd, local
+from fabric.api import lcd, local, run
 from fabric.context_managers import prefix, settings
 from contextlib import contextmanager
 from os.path import join, isdir, relpath
@@ -38,6 +38,16 @@ class VirtualenvFabric(object):
         '''
         with prefix('source %s/bin/activate' % join(self.remote_project_path if remote else self.local_project_path, self.virtualenv_dir)):
             yield
+
+    def run_pip(self, command):
+        '''
+        Run pip on production
+        '''
+        if getattr(self, 'use_virtualenv', False):
+            with self.virtualenv(remote=True):
+                run('pip %s' % command)
+        else:
+            run('pip %s' % command)
 
     def fab_patch(self):
         '''
@@ -84,6 +94,7 @@ class VirtualenvFabric(object):
                 app_dir = self._site_packages_path()
                 with lcd(app_dir):
                     with settings(warn_only=True):
+                        #TODO: fix removing lines about *.pyc from diffs
                         local('diff -rcx .pyc %s.original %s > %s' % (app_name, app_name, patch_path), capture=False)
             else:
                 app_dir = self._source_package_path(app_name)

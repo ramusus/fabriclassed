@@ -1,6 +1,11 @@
 from fabric.api import local, run
 import re
 
+'''
+TODO: move checking use_virtualenv to decorator of method and decide where to keep this decorator
+local_manage, run_manage and run_pip - same logic
+'''
+
 class DjangoFabric(object):
     '''
     Fabric command file with base django's manage.py commands
@@ -16,7 +21,6 @@ class DjangoFabric(object):
         Run manage.py on development
         '''
         if getattr(self, 'use_virtualenv', False):
-            # use virtualenv context manager
             with self.virtualenv():
                 local('%(manage)s %(command)s' % {
                     'manage': self.managefile_path,
@@ -33,7 +37,6 @@ class DjangoFabric(object):
         Run manage.py on production
         '''
         if getattr(self, 'use_virtualenv', False):
-            # use virtualenv context manager
             with self.virtualenv(remote=True):
                 run('%(manage)s %(command)s' % {
                     'manage': self.managefile_path,
