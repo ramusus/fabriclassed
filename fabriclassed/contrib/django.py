@@ -28,7 +28,10 @@ class DjangoFabric(object):
                 'command': command,
             }, capture=False)
 
-    def dev(self):
+#    def local_manage(self, command):
+#        return self._manage(command)
+
+    def fab_dev(self):
         '''
         Run Django's dev server
         '''
@@ -37,13 +40,13 @@ class DjangoFabric(object):
             'port': self.devserver_port,
         })
 
-    def sh(self):
+    def fab_sh(self):
         '''
         Run Django's standart shell or shell from django_extentions application if `shell_plus=True`
         '''
         self._manage('shell_plus' if self.shell_plus else 'shell')
 
-    def test(self, test_name=''):
+    def fab_test(self, test_name=''):
         '''
         Run Django's tests. Argument can be application name, name of test class or method of test class
         '''

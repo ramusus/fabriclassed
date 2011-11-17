@@ -39,9 +39,10 @@ class VirtualenvFabric(object):
         with prefix('source %s/bin/activate' % join(self.local_project_path, self.virtualenv_dir)):
             yield
 
-    def patch(self):
+    def fab_patch(self):
         '''
         Walk over 'diffs' directory and patch every application
+        TODO: doesn't work on production
         '''
         vcs_commands = {
             'git': 'git checkout .',
@@ -69,7 +70,7 @@ class VirtualenvFabric(object):
                 patch_command = 'patch -p1' if vcs == 'hg' else 'patch -p0'
                 local('%s < %s' % (patch_command, join(self.local_project_path, self.diff_dir, patch)), capture=False)
 
-    def diff_dump(self):
+    def fab_diff_dump(self):
         '''
         Walk over map of patched applications and make diff files in 'diffs' directory
         '''
@@ -90,7 +91,7 @@ class VirtualenvFabric(object):
                 with lcd(app_dir):
                     local('%s > %s' % (vcs_commands[vcs], patch_path), capture=False)
 
-    def symlink(self, app_name):
+    def fab_symlink(self, app_name):
         '''
         Create symlink from 'apps' dir to the site-packages or source application dir
         '''

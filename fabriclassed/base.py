@@ -15,7 +15,7 @@ class BaseFabric(object):
     search_exclude_patterns = [".pyc", ".svn", ".tmp_"]
 
     def __init__(self):
-        fab.hosts = self.hosts
+        fab.env.hosts = self.hosts
 
     def _remote(self):
         '''
@@ -24,7 +24,7 @@ class BaseFabric(object):
         '''
         return not exists(self.local_project_path)
 
-    def search(self, string=''):
+    def fab_search(self, string=''):
         '''
         Search string amoung source code inside directories from `search_dirs` property
         '''
@@ -34,7 +34,7 @@ class BaseFabric(object):
             'exclude': '| ' + ' | '.join(['grep -v "%s"' % pattern for pattern in self.search_exclude_patterns]) if len(self.search_exclude_patterns) else '',
         }, capture=False)
 
-    def del_pyc(self):
+    def fab_del_pyc(self):
         '''
         Remove all .pyc files inside in fabfile and child directories
         '''

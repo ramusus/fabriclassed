@@ -1,8 +1,8 @@
 #### Introduction
 
-This is a hack to enable the definition of Fabric tasks as methods in a class instead of just as module level functions. This class-based approach provides the benefits of inheritance and method overriding.
-
 We had several Fabric scripts which violated DRY. Class-based Fabric script can solve this issue.
+This is a hack to enable the definition of Fabric tasks as methods in a class instead of just as module level functions.
+This class-based approach provides the benefits of inheritance and method overriding.
 
 #### Example usage:
 
@@ -15,14 +15,14 @@ class Fabric(BaseFabric):
     remote_project_path = '/local/path/to/my_project'
     local_project_path = '/remote/path/to/my_project'
 
-    def task(self):
+    def fab_task(self):
         '''My website task'''
         fab.local('echo "Hello world"')
 
 __all__ = initialize(Fabric(), __name__)
 ```
 
-Running fab -l gives:
+Every method with prefix 'fab_' will became a fabric command. Running fab -l gives:
 
 ```
 $ fab -l
@@ -93,10 +93,11 @@ Available commands:
     sh               Run Django's standart shell or shell from django_extent...
     symlink          Create symlink from 'apps' dir to the site-packages or ...
     test             Run Django's tests. Argument can be application name, n...
-    virtualenv       Context manager for running command in virtualenv envir...
 ```
 
 #### Installation:
+
+To install the latest version of fabriclassed, just use command:
 
 ```
 pip install fabriclassed
