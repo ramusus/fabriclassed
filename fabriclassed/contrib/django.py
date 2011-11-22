@@ -10,7 +10,7 @@ class DjangoFabric(object):
     '''
     Fabric command file with base django's manage.py commands
     '''
-    managefile_path = './manage.py'
+    manage_file = './manage.py'
     test_default_app = None
     test_settings = None
     shell_plus = False
@@ -23,12 +23,12 @@ class DjangoFabric(object):
         if getattr(self, 'use_virtualenv', False):
             with self.virtualenv():
                 local('%(manage)s %(command)s' % {
-                    'manage': self.managefile_path,
+                    'manage': self.manage_file,
                     'command': command,
                 }, capture=False)
         else:
             local('%(manage)s %(command)s' % {
-                'manage': self.managefile_path,
+                'manage': self.manage_file,
                 'command': command,
             }, capture=False)
 
@@ -39,12 +39,12 @@ class DjangoFabric(object):
         if getattr(self, 'use_virtualenv', False):
             with self.virtualenv(remote=True):
                 run('%(manage)s %(command)s' % {
-                    'manage': self.managefile_path,
+                    'manage': self.manage_file,
                     'command': command,
                 })
         else:
             run('%(manage)s %(command)s' % {
-                'manage': self.managefile_path,
+                'manage': self.manage_file,
                 'command': command,
             })
 
