@@ -1,4 +1,5 @@
-from fabric.api import local, run
+from fabric.api import local, run, cd
+from os.path import join
 import re
 
 '''
@@ -15,6 +16,13 @@ class DjangoFabric(object):
     test_settings = None
     shell_plus = False
     devserver_port = 8000
+
+    # fixtures properties
+    fixtures_dir = 'fixtures'
+    fixtures_format = 'json'
+    fixtures_map = (
+        'sites.site',
+    )
 
     def local_manage(self, command):
         '''
@@ -80,3 +88,20 @@ class DjangoFabric(object):
             'name': test_name,
             'settings': ('--settings=%s' % self.test_settings) if self.test_settings else '',
         })
+
+    def get_fixtures_file(self, model):
+        return join(self.fixtures_dir, '.'.join([model, self.fixtures_format]))
+
+    def fab_update_fixtures(self):
+        '''
+        Put remote fixtures to repository on production, get and load them on development
+        '''
+        with cd(self.remote_project_path):
+            for model in self.fixtures_map:
+                self.run_manage('dumpdata --format=%s %s > %s' % (self.fixtures_format, model, self.get_fixtures_file(model)))
+            run('git add %s' % self.fixtures_dir)
+            run('git commit -m "updated fixtures"')
+            run('git push')
+        local('git pull', capture=False)
+        for model in self.fixtures_map:
+            self.local_manage('loaddata %s' % self.get_fixtures_file(model))

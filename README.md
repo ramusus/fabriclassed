@@ -67,6 +67,11 @@ class Fabric(BaseFabric, DjangoFabric, VirtualenvFabric):
     test_settings = 'settings_test_special_file'
     shell_plus = True
     devserver_port = 8000
+    fixtures_dir = 'fixtures'
+    fixtures_format = 'json'
+    fixtures_map = (
+        'sites.site',
+    )
 
     # virtualenv settings
     use_virtualenv = True
@@ -93,6 +98,7 @@ Available commands:
     sh               Run Django's standart shell or shell from django_extent...
     symlink          Create symlink from 'apps' dir to the site-packages or ...
     test             Run Django's tests. Argument can be application name, n...
+    update_fixtures  Put remote fixtures to repository on production, get an...
 ```
 
 #### Installation:
