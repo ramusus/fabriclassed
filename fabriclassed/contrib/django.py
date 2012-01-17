@@ -16,6 +16,7 @@ class DjangoFabric(object):
     test_settings = None
     shell_plus = False
     devserver_port = 8000
+    devserver_params = ''
 
     # fixtures properties
     fixtures_dir = 'fixtures'
@@ -60,9 +61,10 @@ class DjangoFabric(object):
         '''
         Run Django's dev server
         '''
-        self.local_manage('runserver %(host)s:%(port)d' % {
+        self.local_manage('runserver %(params)s %(host)s:%(port)d' % {
             'host': self.hosts[0] if self.is_remote() else '127.0.0.1',
             'port': self.devserver_port,
+            'params': self.devserver_params,
         })
 
     def fab_sh(self):

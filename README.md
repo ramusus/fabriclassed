@@ -67,6 +67,7 @@ class Fabric(BaseFabric, DjangoFabric, VirtualenvFabric):
     test_settings = 'settings_test_special_file'
     shell_plus = True
     devserver_port = 8000
+    devserver_params = ''
     fixtures_dir = 'fixtures'
     fixtures_format = 'json'
     fixtures_map = (
