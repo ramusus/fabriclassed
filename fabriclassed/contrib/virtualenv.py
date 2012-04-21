@@ -36,7 +36,7 @@ class VirtualenvFabric(object):
         '''
         Context manager for running command in virtualenv environment
         '''
-        with prefix('source %s/bin/activate' % join(self.remote_project_path if remote else self.project_path, self.virtualenv_dir)):
+        with prefix('. %s/bin/activate' % join(self.remote_project_path if remote else self.project_path, self.virtualenv_dir)):
             yield
 
     def run_pip(self, command):
