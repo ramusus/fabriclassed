@@ -23,7 +23,7 @@ class VirtualenvFabric(object):
     applications_dir = 'apps'
 
     def _site_packages_path(self):
-        return self.project_path_join(self.virtualenv_dir, 'lib', 'python2.6', 'site-packages')
+        return self.project_path_join(self.virtualenv_dir, 'lib', 'python2.7', 'site-packages')
 
     def _site_package_path(self, app_name):
         return join(self._site_packages_path(), app_name)

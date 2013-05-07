@@ -14,6 +14,7 @@ class DjangoFabric(object):
     manage_file = './manage.py'
     test_default_app = None
     test_settings = None
+    settings_remote_db = 'settings_remote_db'
     shell_plus = False
     devserver_port = 8000
     devserver_params = ''
@@ -25,39 +26,37 @@ class DjangoFabric(object):
         'sites.site',
     )
 
-    def local_manage(self, command):
+    def get_manage_commend(self, command, settings=False):
+        return '%(manage)s %(command)s %(settings)s' % {
+            'manage': self.manage_file,
+            'command': command,
+            'settings': ('--settings=%s' % settings) if settings else '',
+        }
+
+    def local_manage(self, *args, **kwargs):
         '''
         Run manage.py on development
         '''
+        if 'remote_db' in kwargs and kwargs.pop('remote_db'):
+            kwargs['settings'] = self.settings_remote_db
+
         if getattr(self, 'use_virtualenv', False):
             with self.virtualenv():
-                local('%(manage)s %(command)s' % {
-                    'manage': self.manage_file,
-                    'command': command,
-                }, capture=False)
+                local(self.get_manage_commend(*args, **kwargs), capture=False)
         else:
-            local('%(manage)s %(command)s' % {
-                'manage': self.manage_file,
-                'command': command,
-            }, capture=False)
+            local(self.get_manage_commend(*args, **kwargs), capture=False)
 
-    def run_manage(self, command):
+    def run_manage(self, *args, **kwargs):
         '''
         Run manage.py on production
         '''
         if getattr(self, 'use_virtualenv', False):
             with self.virtualenv(remote=True):
-                run('%(manage)s %(command)s' % {
-                    'manage': self.manage_file,
-                    'command': command,
-                })
+                run(self.get_manage_commend(*args, **kwargs))
         else:
-            run('%(manage)s %(command)s' % {
-                'manage': self.manage_file,
-                'command': command,
-            })
+            run(self.get_manage_commend(*args, **kwargs))
 
-    def fab_dev(self):
+    def fab_dev(self, remote_db=False):
         '''
         Run Django's dev server
         '''
@@ -65,13 +64,13 @@ class DjangoFabric(object):
             'host': self.hosts[0] if self.is_remote() else '127.0.0.1',
             'port': self.devserver_port,
             'params': self.devserver_params,
-        })
+        }, remote_db=remote_db)
 
-    def fab_sh(self):
+    def fab_sh(self, remote_db=False):
         '''
         Run Django's standart shell or shell from django_extentions application if `shell_plus=True`
         '''
-        self.local_manage('shell_plus' if self.shell_plus else 'shell')
+        self.local_manage('shell_plus' if self.shell_plus else 'shell', remote_db=remote_db)
 
     def fab_test(self, test_name=''):
         '''
@@ -86,10 +85,9 @@ class DjangoFabric(object):
             if re.search(r'^[^\.]+Test', test_name):
                 test_name = '.'.join([self.test_default_app, test_name])
 
-        self.local_manage('test %(name)s %(settings)s' % {
+        self.local_manage('test %(name)s' % {
             'name': test_name,
-            'settings': ('--settings=%s' % self.test_settings) if self.test_settings else '',
-        })
+        }, settings=self.test_settings)
 
     def get_fixtures_file(self, model):
         return join(self.fixtures_dir, '.'.join([model, self.fixtures_format]))
