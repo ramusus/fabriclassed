@@ -12,7 +12,8 @@ class BaseFabric(object):
     local_project_path = ''
 
     search_dirs = []
-    search_exclude_patterns = [".pyc", ".svn", ".tmp_", "*migrations*"]
+    search_exclude_patterns = [".pyc", ".tmp_"]
+    search_exclude_dir_patterns = [".svn", "migrations", ".git", "*.egg-info"]
 
     def __init__(self):
         fab.env.hosts = self.hosts
@@ -41,10 +42,11 @@ class BaseFabric(object):
         '''
         Search string amoung source code inside directories from `search_dirs` property
         '''
-        fab.local('grep -r "%(string)s" %(dirs)s %(exclude)s' % {
+        fab.local('grep -R "%(string)s" %(dirs)s %(exclude)s' % {
             'string': string,
             'dirs': ' '.join(self.search_dirs),
-            'exclude': ' '.join(['--exclude "%s"' % pattern for pattern in self.search_exclude_patterns]) if len(self.search_exclude_patterns) else '',
+            'exclude': ' '.join(['--exclude "%s"' % pattern for pattern in self.search_exclude_patterns] \
+                + ['--exclude-dir "%s"' % pattern for pattern in self.search_exclude_dir_patterns]),
         }, capture=False)
 
     def fab_del_pyc(self):

@@ -60,7 +60,7 @@ class VirtualenvFabric(object):
             'hg': 'hg revert .',
         }
         for patch in listdir(self.project_path_join(self.diff_dir)):
-            app_name, vcs = patch.split('.')[:-1]
+            app_name, vcs = '.'.join(patch.split('.')[:-2]), patch.split('.')[-2]
             if vcs == 'lib':
                 app_dir = self._site_packages_path()
                 if isdir(self._site_package_path(app_name)) and isdir(self._site_package_path('%s.original' % app_name)):

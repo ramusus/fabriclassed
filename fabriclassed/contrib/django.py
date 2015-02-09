@@ -66,11 +66,13 @@ class DjangoFabric(object):
             'params': self.devserver_params,
         }, remote_db=remote_db)
 
-    def fab_sh(self, remote_db=False):
+    def fab_sh(self, remote_db=False, sql=False):
         '''
         Run Django's standart shell or shell from django_extentions application if `shell_plus=True`
         '''
-        self.local_manage('shell_plus' if self.shell_plus else 'shell', remote_db=remote_db)
+        command = 'shell_plus' if self.shell_plus else 'shell'
+        sql = ' --print-sql' if sql else ''
+        self.local_manage(command + sql, remote_db=remote_db)
 
     def fab_test(self, test_name=''):
         '''
