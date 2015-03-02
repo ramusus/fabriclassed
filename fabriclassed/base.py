@@ -8,6 +8,7 @@ __all__ = ['BaseFabric', 'DjangoFabric', 'VirtualenvFabric']
 class BaseFabric(object):
 
     hosts = []
+    user = None
     remote_project_path = ''
     local_project_path = ''
 
@@ -17,6 +18,8 @@ class BaseFabric(object):
 
     def __init__(self):
         fab.env.hosts = self.hosts
+        if self.user:
+            fab.env.user = self.user
 
     def is_remote(self):
         '''
